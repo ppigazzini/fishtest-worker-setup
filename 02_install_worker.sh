@@ -28,10 +28,7 @@ read n_cores
 pacman -Syuu --noconfirm
 
 # install packages if not already installed
-unzip -v &> /dev/null || pacman -S --noconfirm unzip
-make -v &> /dev/null || pacman -S --noconfirm make
-g++ -v &> /dev/null || pacman -S --noconfirm mingw-w64-x86_64-gcc
-python3 --version &> /dev/null || pacman -S --noconfirm mingw-w64-x86_64-python3
+pacman -S --noconfirm --needed unzip make mingw-w64-x86_64-gcc mingw-w64-x86_64-python3
 
 # delete old worker
 rm -rf worker
