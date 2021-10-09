@@ -24,9 +24,6 @@ echo "Write the number of cores to be contributed to fishtest:"
 echo "(max suggested 'Total CPU cores - 1')"
 read n_cores
 
-# update msys2 packages
-pacman -Syuu --noconfirm
-
 # install packages if not already installed
 pacman -S --noconfirm --needed unzip make mingw-w64-x86_64-gcc mingw-w64-x86_64-python3
 
