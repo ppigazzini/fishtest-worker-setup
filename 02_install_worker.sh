@@ -40,7 +40,7 @@ python3.exe -m venv "env"
 env/bin/python3.exe -m pip install --upgrade pip setuptools wheel
 env/bin/python3.exe -m pip install requests
 # write fishtest.cfg
-env/bin/python3.exe worker.py --only_config True --concurrency "${n_cores}" "${usr_name}" "${usr_pwd}" && echo "Successfully set the concurrency value" || echo "Error: restart the script setting a proper concurrency value"
+env/bin/python3.exe worker.py "${usr_name}" "${usr_pwd}" --concurrency "${n_cores}" --only_config --no_validation && echo "Successfully set the concurrency value" || echo "Error: restart the script setting a proper concurrency value"
 
 cat << EOF >> fishtest.cmd
 @echo off
