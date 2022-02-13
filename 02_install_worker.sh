@@ -38,7 +38,7 @@ pushd fishtest-master/worker
 # setup a virtual environment
 python3.exe -m venv "env"
 env/bin/python3.exe -m pip install --upgrade pip setuptools wheel
-env/bin/python3.exe -m pip install requests
+env/bin/python3.exe -m pip install requests expression-parser
 # write fishtest.cfg
 env/bin/python3.exe worker.py "${usr_name}" "${usr_pwd}" --concurrency "${n_cores}" --only_config --no_validation && echo "Successfully set the concurrency value" || echo "Error: restart the script setting a proper concurrency value"
 
