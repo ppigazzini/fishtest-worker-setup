@@ -33,12 +33,12 @@ rm -rf worker
 tmp_dir=___${RANDOM}
 mkdir ${tmp_dir} && pushd ${tmp_dir}
 wget https://github.com/glinscott/fishtest/archive/master.zip
-unzip master.zip fishtest-master/worker/*
+unzip master.zip "fishtest-master/worker/**"
 pushd fishtest-master/worker
 # setup a virtual environment
 python3.exe -m venv "env"
 env/bin/python3.exe -m pip install --upgrade pip setuptools wheel
-env/bin/python3.exe -m pip install requests expression-parser
+env/bin/python3.exe -m pip install requests
 # write fishtest.cfg
 env/bin/python3.exe worker.py "${usr_name}" "${usr_pwd}" --concurrency "${n_cores}" --only_config --no_validation && echo "Successfully set the concurrency value" || echo "Error: restart the script setting a proper concurrency value"
 
