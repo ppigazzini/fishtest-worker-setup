@@ -28,7 +28,7 @@ rm -rf worker
 # download fishtest
 tmp_dir=___${RANDOM}
 mkdir ${tmp_dir} && pushd ${tmp_dir}
-wget https://github.com/glinscott/fishtest/archive/master.zip
+wget https://github.com/official-stockfish/fishtest/archive/master.zip
 unzip master.zip "fishtest-master/worker/**"
 pushd fishtest-master/worker
 # setup a virtual environment
