@@ -6,7 +6,7 @@ cpu_model=$(grep "^model name" /proc/cpuinfo | uniq | cut -d ':' -f 2)
 n_cpus=$(grep "^physical id" /proc/cpuinfo | uniq | wc -l)
 online_cores=$(grep "^processor" /proc/cpuinfo | wc -l)
 n_siblings=$(grep "^siblings" /proc/cpuinfo | uniq | cut -d ':' -f 2)
-n_cpu_cores=$(grep "^cpu cores" /proc/cpuinfo | uniq | cut -d ':' -f 2)
+n_cpu_cores=$(grep "^core id" /proc/cpuinfo | uniq | wc -l)
 total_siblings=$(($n_cpus * $n_siblings))
 total_cpu_cores=$(($n_cpus * $n_cpu_cores))
 printf "CPU model : $cpu_model\n"
