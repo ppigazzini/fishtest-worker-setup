@@ -21,30 +21,27 @@ read -p "Write your fishtest password: " usr_pwd
 read -p "Write the number of cores to be contributed to fishtest (max suggested 'Total CPU cores - 1'): " n_cores
 
 # install packages if not already installed
-pacman -S --noconfirm --needed unzip make mingw-w64-x86_64-gcc mingw-w64-x86_64-python3
+pacman -S --noconfirm --needed git make mingw-w64-x86_64-gcc mingw-w64-x86_64-python3 mingw-w64-x86_64-uv
 
 # delete old worker
 rm -rf worker
-# download fishtest
-tmp_dir=___${RANDOM}
-mkdir ${tmp_dir} && pushd ${tmp_dir}
-wget https://github.com/official-stockfish/fishtest/archive/master.zip
-unzip master.zip "fishtest-master/worker/**"
-pushd fishtest-master/worker
-# setup a virtual environment
-python3.exe -m venv "env"
-env/bin/python3.exe -m pip install --upgrade pip setuptools wheel
-env/bin/python3.exe -m pip install requests
-# write fishtest.cfg
-env/bin/python3.exe worker.py "$usr_name" "$usr_pwd" --concurrency "$n_cores" --only_config --no_validation && echo "Successfully set the concurrency value" || echo "Error: restart the script setting a proper concurrency value"
+# clone worker from fishtest
+git init fishtest
+pushd fishtest
+git remote add origin https://github.com/official-stockfish/fishtest.git
+git config core.sparseCheckout true
+echo "worker/" >> .git/info/sparse-checkout
+git pull --depth=1 origin master
+popd
+mv fishtest/worker .
+rm -rf fishtest
+
+# write fishtest.cfg and a runner script
+cd worker
+uv run worker.py "$usr_name" "$usr_pwd" --concurrency "$n_cores" --only_config --no_validation && echo "Successfully set the concurrency value" || echo "Error: restart the script setting a proper concurrency value"
 
 cat << EOF >> fishtest.cmd
 @echo off
 set PATH=C:\tools\msys64\mingw64\bin;C:\tools\msys64\usr\bin;%PATH%
-
-env\bin\python3.exe -i worker.py
+uv run worker.py
 EOF
-
-popd && popd
-mv $tmp_dir/fishtest-master/worker .
-rm -rf $tmp_dir
