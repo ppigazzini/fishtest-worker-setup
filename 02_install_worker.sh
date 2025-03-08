@@ -21,10 +21,11 @@ read -p "Write your fishtest password: " usr_pwd
 read -p "Write the number of cores to be contributed to fishtest (max suggested 'Total CPU cores - 1'): " n_cores
 
 # install packages if not already installed
-pacman -S --noconfirm --needed unzip make mingw-w64-x86_64-gcc mingw-w64-x86_64-python3
+pacman -Syuu --noconfirm
+pacman -S --noconfirm --needed unzip make mingw-w64-ucrt-x86_64-gcc mingw-w64-ucrt-x86_64-python3
 
 # delete old worker
-rm -rf worker
+rm -rf worker*
 # download fishtest
 tmp_dir=___${RANDOM}
 mkdir ${tmp_dir} && pushd ${tmp_dir}
@@ -40,11 +41,11 @@ env/bin/python3.exe worker.py "$usr_name" "$usr_pwd" --concurrency "$n_cores" --
 
 cat << EOF >> fishtest.cmd
 @echo off
-set PATH=C:\tools\msys64\mingw64\bin;C:\tools\msys64\usr\bin;%PATH%
+set PATH=C:\msys64\ucrt64\bin;C:\msys64\usr\bin;%PATH%
 
 env\bin\python3.exe -i worker.py
 EOF
 
 popd && popd
-mv $tmp_dir/fishtest-master/worker .
+mv $tmp_dir/fishtest-master/worker "worker_${n_cores}_cores"
 rm -rf $tmp_dir
