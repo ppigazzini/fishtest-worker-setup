@@ -21,14 +21,30 @@ read -p "Write your fishtest password: " usr_pwd
 read -p "Write the number of cores to be contributed to fishtest (max suggested 'Total CPU cores - 1'): " n_cores
 
 # install packages if not already installed
-pacman -S --noconfirm --needed unzip make mingw-w64-x86_64-gcc mingw-w64-x86_64-python3
+pacman -S --noconfirm --needed curl unzip make mingw-w64-x86_64-gcc mingw-w64-x86_64-python3
 
 # delete old worker
 rm -rf worker
-# download fishtest
-tmp_dir=___${RANDOM}
-mkdir ${tmp_dir} && pushd ${tmp_dir}
-wget https://github.com/official-stockfish/fishtest/archive/master.zip
+# create a safe temporary directory and fail fast if it cannot be created
+tmp_dir=$(mktemp -d -t fishtest-worker-XXXXXX) || { echo "Failed to create temporary directory" >&2; exit 1; }
+# ensure we clean up the temp dir on any exit (success or failure)
+cleanup() { [[ -n "$tmp_dir" && -d "$tmp_dir" ]] && rm -rf "$tmp_dir"; }
+trap cleanup EXIT
+pushd "$tmp_dir"
+# download fishtest sources reliably (follow redirects, retry transient failures, time out if stuck)
+if ! curl -L --fail --retry 5 --retry-delay 2 --retry-connrefused --connect-timeout 15 --max-time 600 -o master.zip \
+  https://github.com/official-stockfish/fishtest/archive/master.zip; then
+  echo "Error: failed to download fishtest archive" >&2
+  exit 1
+fi
+if [[ ! -s master.zip ]]; then
+  echo "Error: downloaded archive is missing or empty" >&2
+  exit 1
+fi
+if [[ "$(head -c 4 master.zip)" != $'PK\003\004' ]]; then
+  echo "Error: downloaded file is not a valid zip archive" >&2
+  exit 1
+fi
 unzip master.zip "fishtest-master/worker/**"
 pushd fishtest-master/worker
 # setup a virtual environment
@@ -47,4 +63,3 @@ EOF
 
 popd && popd
 mv $tmp_dir/fishtest-master/worker .
-rm -rf $tmp_dir
